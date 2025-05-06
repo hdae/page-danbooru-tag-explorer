@@ -19,7 +19,7 @@ const client = new QueryClient()
 createRoot(root).render(
     <StrictMode>
         <QueryClientProvider client={client}>
-            <Theme asChild appearance="dark" grayColor="slate" accentColor="grass">
+            <Theme asChild appearance="dark" grayColor="slate" accentColor="blue">
                 <Box width="100%" height="100%">
                     <App />
                     <Toaster position="top-right" />
