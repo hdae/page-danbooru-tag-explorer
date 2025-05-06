@@ -11,28 +11,17 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18]
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
 
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
-
-      - name: Install packages
-        run: pnpm i
+      - name: Install dependencies
+        run: bun install
 
       - name: Build application
-        run: pnpm build
+        run: bun build
 
       - name: Deploy to pages
         uses: peaceiris/actions-gh-pages@v3
