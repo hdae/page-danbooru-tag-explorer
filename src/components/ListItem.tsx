@@ -1,8 +1,21 @@
 import { Badge, Card, Flex, Text } from "@radix-ui/themes"
 import type { FuseResult } from "fuse.js"
 import { type FC } from "react"
+import toast from "react-hot-toast"
 
-const copyToClipboard = (text: string) => () => navigator.clipboard.writeText(text)
+const copyToClipboard = (text: string) => () => {
+    toast.promise(
+        () => navigator.clipboard.writeText(text),
+        {
+            loading: "Copying...",
+            success: `Copied: "${text}"`,
+            error: "Copy failed",
+        },
+        {
+            duration: 3000,
+        }
+    )
+}
 
 const category: Record<string, string> = {
     "0": "General",
@@ -38,8 +51,10 @@ export const ListItem: FC<{
     <Card
         onClick={copyToClipboard(result.item.w)}
         style={{
+            cursor: "pointer",
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            "--card-background-color": category_bg_color[result.item.c]
+            "--card-background-color": category_bg_color[result.item.c],
         }}
     >
         <Flex
