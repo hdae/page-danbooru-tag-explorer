@@ -43,14 +43,14 @@ export const App = () => {
                         asChild
                     >
                         <RadioGroup.Root
-                            defaultValue="score"
+                            defaultValue="scored"
                             onValueChange={(val) => setMode(val as Mode)}
                         >
                             <RadioGroup.Item value="scored">
-                                Scored
+                                Scored search
                             </RadioGroup.Item>
                             <RadioGroup.Item value="sorted">
-                                Sort
+                                Popularity search
                             </RadioGroup.Item>
                         </RadioGroup.Root>
                     </Flex>
