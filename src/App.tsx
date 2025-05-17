@@ -1,17 +1,20 @@
-import { Checkbox, Flex, Heading, Text, TextField } from "@radix-ui/themes"
+import { Checkbox, Flex, Heading, RadioGroup, Text, TextField } from "@radix-ui/themes"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { ListItem } from "./components/ListItem"
+
+export type Mode = "scored" | "sorted"
 
 const fuse = new ComlinkWorker<typeof import("./comlink")>(new URL("./comlink", import.meta.url))
 
 export const App = () => {
     const [search, setSearch] = useState("")
-    const [sorted, setSorted] = useState(false)
+    const [mode, setMode] = useState<Mode>("scored")
+    const [replace, setReplace] = useState(true)
 
     const response = useQuery({
-        queryKey: ["search", search, sorted],
-        queryFn: () => fuse.search(search, 20, sorted)
+        queryKey: ["search", search, mode],
+        queryFn: () => fuse.search(search, 20, mode)
     })
 
     return (
@@ -28,11 +31,33 @@ export const App = () => {
                 <Heading>
                     Danbooru tag explorer
                 </Heading>
-                <Flex direction="row" justify="center">
+                <Flex
+                    direction="row"
+                    justify="between"
+                    gap="6"
+                >
+                    <Flex
+                        direction="row"
+                        justify="center"
+                        gap="2"
+                        asChild
+                    >
+                        <RadioGroup.Root
+                            defaultValue="score"
+                            onValueChange={(val) => setMode(val as Mode)}
+                        >
+                            <RadioGroup.Item value="scored">
+                                Scored
+                            </RadioGroup.Item>
+                            <RadioGroup.Item value="sorted">
+                                Sort
+                            </RadioGroup.Item>
+                        </RadioGroup.Root>
+                    </Flex>
                     <Text as="label" size="2">
                         <Flex gap="2">
-                            <Checkbox checked={sorted} onCheckedChange={(val) => setSorted(val === true)} />
-                            Sort by popularity
+                            <Checkbox checked={replace} onCheckedChange={(val) => setReplace(val === true)} />
+                            Replace underscore on copy
                         </Flex>
                     </Text>
                 </Flex>
@@ -41,8 +66,13 @@ export const App = () => {
                     placeholder="Search tags..."
                     onInput={(ev) => setSearch(ev.currentTarget.value)}
                 />
-                {response.data?.map((result) => (
-                    <ListItem result={result} />
+                {response.isLoading && (
+                    <Text>
+                        Loading...
+                    </Text>
+                )}
+                {response.data?.map((result, index) => (
+                    <ListItem key={index} result={result} replace={replace} />
                 ))}
             </Flex>
         </Flex>

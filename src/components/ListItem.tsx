@@ -3,9 +3,9 @@ import type { FuseResult } from "fuse.js"
 import { type FC } from "react"
 import toast from "react-hot-toast"
 
-const copyToClipboard = (text: string) => () => {
+const copyToClipboard = (text: string, replace: boolean) => () => {
     toast.promise(
-        () => navigator.clipboard.writeText(text),
+        () => navigator.clipboard.writeText(replace ? text.replaceAll("_", " ") : text),
         {
             loading: "Copying...",
             success: `Copied: "${text}"`,
@@ -47,9 +47,10 @@ export const ListItem: FC<{
         p: string
         a: string[]
     }>
-}> = ({ result }) => (
+    replace: boolean
+}> = ({ result, replace }) => (
     <Card
-        onClick={copyToClipboard(result.item.w)}
+        onClick={copyToClipboard(result.item.w, replace)}
         style={{
             cursor: "pointer",
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -68,11 +69,11 @@ export const ListItem: FC<{
                 align="start"
                 justify="between"
             >
-                <Text as="div" size="5" weight="bold" >
+                <Text as="div" size="5" weight="bold">
                     {result.item.w}
                 </Text>
-                <Text as="div" size="2" >
-                    {category[result.item.c]} - {result.item.p}
+                <Text as="div" size="2">
+                    {category[result.item.c]}
                 </Text>
             </Flex>
             <Flex
@@ -89,6 +90,17 @@ export const ListItem: FC<{
                         {v}
                     </Badge>
                 ))}
+            </Flex>
+            <Flex
+                direction="row"
+                gap="1"
+                wrap="wrap"
+                align="start"
+                justify="between"
+            >
+                <Text as="div" size="2">
+                    Popularity: {result.item.p}
+                </Text>
             </Flex>
         </Flex>
     </Card>
