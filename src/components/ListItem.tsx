@@ -72,7 +72,7 @@ export const ListItem: FC<{
                     {result.item.w}
                 </Text>
                 <Text as="div" size="2" >
-                    {category[result.item.c]}
+                    {category[result.item.c]} - {result.item.p}
                 </Text>
             </Flex>
             <Flex
