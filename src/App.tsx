@@ -27,6 +27,7 @@ export const App = () => {
                 direction="column"
                 gap="4"
                 width="800px"
+                maxWidth="100vw"
             >
                 <Heading>
                     Danbooru tag explorer
