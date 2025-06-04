@@ -11,7 +11,8 @@ const useQueryParam = () => useMemo(
     () => Object.fromEntries(window.location.search
         .slice(1)
         .split("&")
-        .map(item => item.split("="))),
+        .map(item => item.split("=")
+            .map(v => decodeURIComponent(v)))),
     []
 )
 
