@@ -81,15 +81,17 @@ export const ListItem: FC<{
                 gap="1"
                 wrap="wrap"
             >
-                {result.item.a.map(v => (
-                    <Badge
-                        variant="outline"
-                        size="2"
-                        color={category_color[result.item.c]}
-                    >
-                        {v}
-                    </Badge>
-                ))}
+                {result.item.a
+                    .filter(v => v.trim() !== "")
+                    .map(v => (
+                        <Badge
+                            variant="outline"
+                            size="2"
+                            color={category_color[result.item.c]}
+                        >
+                            {v}
+                        </Badge>
+                    ))}
             </Flex>
             <Flex
                 direction="row"

@@ -1,11 +1,19 @@
 import { Checkbox, Flex, Heading, RadioGroup, Text, TextField } from "@radix-ui/themes"
 import { useQuery } from "@tanstack/react-query"
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { ListItem } from "./components/ListItem"
 
 export type Mode = "scored" | "sorted"
 
 const fuse = new ComlinkWorker<typeof import("./comlink")>(new URL("./comlink", import.meta.url))
+
+const useQueryParam = () => useMemo(
+    () => Object.fromEntries(window.location.search
+        .slice(1)
+        .split("&")
+        .map(item => item.split("="))),
+    []
+)
 
 export const App = () => {
     const [search, setSearch] = useState("")
@@ -16,6 +24,11 @@ export const App = () => {
         queryKey: ["search", search, mode],
         queryFn: () => fuse.search(search, 20, mode)
     })
+
+    const param = useQueryParam()
+    useEffect(() => {
+        setSearch(param["q"])
+    }, [param])
 
     return (
         <Flex
@@ -66,6 +79,7 @@ export const App = () => {
                     size="3"
                     placeholder="Search tags..."
                     onInput={(ev) => setSearch(ev.currentTarget.value)}
+                    defaultValue={search}
                 />
                 {response.isLoading && (
                     <Text>
