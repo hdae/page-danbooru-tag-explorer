@@ -1,7 +1,7 @@
 import { parse } from "@std/csv"
 import Fuse from "fuse.js"
 import type { Mode } from "./App"
-import csv_url from "./danbooru.csv?url"
+import csv_url from "./assets/danbooru.csv?url"
 
 const fuses = fetch(csv_url)
     .then(async res => parse(await res.text()))
