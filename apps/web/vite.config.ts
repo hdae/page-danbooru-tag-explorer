@@ -2,11 +2,63 @@ import { defineConfig } from "vite-plus";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { comlink } from "vite-plugin-comlink";
+import license, { type Dependency } from "rollup-plugin-license";
+import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
+const outDir = resolve(__dirname, "dist");
+
+const collectedDeps = new Map<string, Dependency>();
+
+const formatAuthor = (a: Dependency["author"]) =>
+  typeof a === "string"
+    ? a
+    : a
+      ? [a.name, a.email && `<${a.email}>`, a.url].filter(Boolean).join(" ")
+      : "";
+
+const formatDep = (d: Dependency) =>
+  [
+    `Name: ${d.name ?? "(anonymous)"}`,
+    `Version: ${d.version ?? "?"}`,
+    `License: ${d.license ?? "UNKNOWN"}`,
+    d.author ? `Author: ${formatAuthor(d.author)}` : null,
+    d.repository
+      ? `Repository: ${typeof d.repository === "string" ? d.repository : (d.repository.url ?? "")}`
+      : null,
+    d.homepage ? `Homepage: ${d.homepage}` : null,
+    d.description ? `Description: ${d.description}` : null,
+    "",
+    d.licenseText ?? "(no license text bundled)",
+  ]
+    .filter((v) => v !== null)
+    .join("\n");
+
+const noticeTemplate = (deps: Dependency[]) => {
+  for (const d of deps) collectedDeps.set(`${d.name ?? ""}@${d.version ?? ""}`, d);
+  return Array.from(collectedDeps.values())
+    .sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""))
+    .map(formatDep)
+    .join("\n\n---\n\n");
+};
+
+const notice = () =>
+  license({
+    thirdParty: {
+      output: {
+        file: resolve(outDir, "NOTICE.txt"),
+        template: noticeTemplate,
+      },
+    },
+  });
 
 // https://vite.dev/config/
 export default defineConfig({
   base: "",
+  build: {
+    outDir,
+  },
   lint: {
     plugins: ["oxc", "typescript", "unicorn", "react"],
     categories: {
@@ -129,9 +181,9 @@ export default defineConfig({
       "vite-plus/prefer-vite-plus-imports": "error",
     },
   },
-  plugins: [react(), tailwindcss(), comlink()],
+  plugins: [react(), tailwindcss(), comlink(), notice()],
   worker: {
-    plugins: () => [comlink()],
+    plugins: () => [comlink(), notice()],
   },
   resolve: {
     alias: {
