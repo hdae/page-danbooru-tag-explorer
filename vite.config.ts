@@ -1,12 +1,16 @@
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
-import { comlink } from "vite-plugin-comlink"
+import { defineConfig } from "vite-plus";
 
-// https://vite.dev/config/
 export default defineConfig({
-  base: "",
-  plugins: [react(), comlink()],
-  worker: {
-    plugins: () => [comlink()]
-  }
-})
+  staged: {
+    "*": "vp check --fix",
+  },
+  fmt: {},
+  lint: {
+    jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
+    rules: { "vite-plus/prefer-vite-plus-imports": "error" },
+    options: { typeAware: true, typeCheck: true },
+  },
+  run: {
+    cache: true,
+  },
+});
